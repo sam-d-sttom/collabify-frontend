@@ -1,38 +1,58 @@
-// src/pages/Signup.jsx
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import googleLogo from "../assets/google-logo.svg";
 import facebookLogo from "../assets/facebook-logo.svg";
 import appleLogo from "../assets/apple-logo.svg";
-import peopleWorking from "../assets/people-working.jpg";
 import peopleWorking2 from "../assets/people-working2.jpg";
-import {
-    TextField,
-    Button,
-    IconButton,
-    InputAdornment,
-    OutlinedInput,
-    FormControl,
-    InputLabel,
-} from "@mui/material";
+import { TextField, Button, IconButton, InputAdornment, OutlinedInput, FormControl, InputLabel } from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import authService from "../services/authService";
+import { validateRegistrationForm } from "../utils/validateRegistrationForm";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Signup() {
+    const navigate = useNavigate();
+
     const [form, setForm] = useState({
-        username: "",
         name: "",
         email: "",
         password: "",
         confirmPassword: "",
     });
 
+    const [ errors, setErrors ] = useState({});
+    const [ isSubmiting, setIsSubmiting ] = useState(false);
+
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Form data:", form);
+
+        setIsSubmiting(true);
+        setErrors({});
+
+        // Sanitize and validate input 
+        const { sanitized, errors } = validateRegistrationForm(form);
+        if (Object.keys(errors).length > 0) {
+            setErrors(errors);
+            setIsSubmiting(false);
+            return;
+        }
+
+        try {
+            const response = await authService.register(sanitized);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            setIsSubmiting(false);
+            toast.success("Registration successful!");
+            navigate("/dashboard");
+        } catch (err) {
+            console.error("Registration error:", err);
+            setIsSubmiting(false);
+        }
+
     };
 
     const handleMouseDownPassword = (event) => {
@@ -41,8 +61,8 @@ export default function Signup() {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-bgLight dark:bg-bgDark">
-            <div className=" md:w-2/5 rounded-sm h-screen flex flex-col py-2 justify-center items-center relative">
+        <div className="flex justify-center items-center h-screen min-h-[500px]">
+            <div className=" md:w-2/5 rounded-sm h-screen min-h-[500px] flex flex-col py-2 justify-center items-center relative">
                 <div className="w-full px-6 absolute top-[0px]">
                     <span>Collabify</span>
                 </div>
@@ -51,7 +71,7 @@ export default function Signup() {
                     className="p-8 w-full max-w-md"
                 >
                     <h3 className="text-sm text-textSecondaryLight dark:text-textSecondaryDark">Become more productive.</h3>
-                    <h2 className="text-2xl font-bold text-textPrimaryLight dark:text-textPrimaryDark">Create Account</h2>
+                    <h2 className="text-2xl font-bold">Create Account</h2>
 
                     <TextField
                         label="Full Name"
@@ -64,11 +84,12 @@ export default function Signup() {
                         size="small"
                         sx={{
                             "& .MuiOutlinedInput-root": {
-                                borderRadius: "5px", // adjust the radius here
+                                borderRadius: "5px",
                             }
                         }}
 
                     />
+                    {errors.name && <p className="text-sm text-red-700">{errors.name}</p>}
 
                     <TextField
                         label="Email"
@@ -82,19 +103,20 @@ export default function Signup() {
                         size="small"
                         sx={{
                             "& .MuiOutlinedInput-root": {
-                                borderRadius: "5px", // adjust the radius here
+                                borderRadius: "5px",
                             }
                         }}
 
                     />
+                    {errors.email && <p className="text-sm text-red-700">{errors.email}</p>}
 
-                    {/* Password using FormControl + OutlinedInput */}
+                    
                     <FormControl
                         fullWidth
                         margin="normal"
                         sx={{
                             "& .MuiOutlinedInput-root": {
-                                borderRadius: "5px", // adjust the radius here
+                                borderRadius: "5px",
                             }
                         }}
                         size="small"
@@ -122,14 +144,14 @@ export default function Signup() {
 
                         />
                     </FormControl>
+                    {errors.password && <p className="text-sm text-red-700">{errors.password}</p>}
 
-                    {/* Confirm Password using FormControl + OutlinedInput */}
                     <FormControl
                         fullWidth
                         margin="normal"
                         sx={{
                             "& .MuiOutlinedInput-root": {
-                                borderRadius: "5px", // adjust the radius here
+                                borderRadius: "5px",
                             }
                         }}
                         size="small"
@@ -158,6 +180,7 @@ export default function Signup() {
 
                         />
                     </FormControl>
+                    {errors.confirmPassword && <p className="text-sm text-red-700">{errors.confirmPassword}</p>}
 
                     <Button
                         type="submit"
@@ -170,7 +193,7 @@ export default function Signup() {
                             borderRadius: "5px"
                         }}
                     >
-                        Sign Up
+                        {isSubmiting ? "Creating Account..." : "Create Account"}
                     </Button>
 
                     {/* Divider */}
@@ -233,7 +256,7 @@ export default function Signup() {
                     </div>
 
 
-                    <p className="text-sm text-center mt-4">
+                    <p className="text-sm text-sm text-center mt-4">
                         Already have an account?{" "}
                         <a href="/login" className="text-blue-500 hover:underline">
                             Login
@@ -242,7 +265,7 @@ export default function Signup() {
                 </form>
             </div>
             <div
-                className="bg-bgDark w-3/5 h-screen hidden sm:block bg-cover bg-center relative"
+                className="bg-bgDark w-3/5 h-screen min-h-[500px] hidden sm:block bg-cover bg-center relative"
                 style={{ backgroundImage: `url(${peopleWorking2})` }}
             >
                 {/* Overlay */}
