@@ -1,19 +1,16 @@
-
+import DashboardContainer from "../components/DashboardContainer";
 
 function Dashboard() {
     const user = JSON.parse(localStorage.getItem('user'));
 
     return (
-        <div className="p-8">
-            <h1 className="text-3xl font-bold mb-4">Dashboard</h1>
-            {user ? (
-                <div>
-                    <p>Welcome, {user.name}!</p>
-                    <p>Email: {user.email}</p>
+        <div className="">
+            <DashboardContainer content={(
+                <div className="p-4 h-[1000px]">
+                    <h1 className="text-2xl font-bold mb-4">Welcome to your Dashboard, {user ? user.name : 'User'}!</h1>
+                    <p>This is where you can manage your projects and tasks.</p>
                 </div>
-            ) : (
-                <p>Loading user data...</p>
-            )}
+            )} />
         </div>
     );
 }

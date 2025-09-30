@@ -7,6 +7,8 @@
   --color-secondary: #6366F1;
   --color-bgLight: #F9FAFB;
   --color-bgDark: #111827;
+  --color-searchBarBgLight: #eff2f4;
+  --color-searchBarBgDark: #171f32;
   --color-textPrimaryLight: #111827;
   --color-textPrimaryDark: #F9FAFB;
   --color-textSecondaryLight: #4B5563;
@@ -17,3 +19,7 @@
   --color-info: #0EA5E9;
   --color-testWhite: #fff;
 }
+
+/* .{
+    color: #171f32
+} */
