@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { Home, FolderKanban, CheckSquare, MessageSquare, FileText, Calendar, Users, UserPlus, Settings, CreditCard, HelpCircle, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useLocation } from "react-router-dom";
 
 export default function DashboardSideBar() {
   const [isOpen, setIsOpen] = useState(true);
   const [isHovered, setIsHovered] = useState(false);
+
+  const location = useLocation();
 
   const menuItems = [
     // Main Navigation
@@ -37,7 +40,7 @@ export default function DashboardSideBar() {
     <div
       className={`${
         shouldExpand ? 'w-64' : 'w-16 sm:w-20'
-      } shadow-lg dark:shadow-blue-500/50 transition-all duration-300 ease-in-out relative`}
+      } shadow-lg dark:shadow-blue-500/50 text-sm transition-all duration-300 ease-in-out relative`}
     >
       {/* Toggle Button */}
       <button
@@ -53,7 +56,7 @@ export default function DashboardSideBar() {
         onMouseLeave={() => setIsHovered(false)}
         className="h-full flex flex-col justify-between p-1 sm:p-4"
       >
-        <nav className={`space-y-2 overflow-x-hidden ${isHovered || isOpen ? 'overflow-y-auto' : 'overflow-y-hidden'}`}>
+        <nav className={`space-y-2 p-4 overflow-x-hidden ${isHovered || isOpen ? 'overflow-y-auto' : 'overflow-y-hidden'}`}>
           {menuItems.map((item, index) => {
             if (item.divider) {
               return <hr key={index} className="my-3 border-gray-300 dark:border-gray-700" />;
@@ -63,9 +66,9 @@ export default function DashboardSideBar() {
               <a
                 key={index}
                 href="#"
-                className="flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 text-gray-700 dark:text-gray-300 transition-colors group"
+                className={`flex items-center gap-4 px-4 py-3 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/10 text-gray-700 dark:text-gray-300 transition-colors group` + (location.pathname === `/${item.label.toLowerCase()}` ? ' bg-blue-100 dark:bg-blue-900 font-semibold' : '')}
               >
-                <Icon size={24} className="flex-shrink-0 group-hover:text-blue-500" />
+                <Icon size={16} className="flex-shrink-0 group-hover:text-blue-500" />
                 <span className={`${!shouldExpand && 'hidden'} whitespace-nowrap`}>
                   {item.label}
                 </span>

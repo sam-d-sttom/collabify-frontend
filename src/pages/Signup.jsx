@@ -9,8 +9,31 @@ import authService from "../services/authService";
 import { validateRegistrationForm } from "../utils/validateRegistrationForm";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useGoogleLogin } from "@react-oauth/google";
+import axios from "axios";
 
 export default function Signup() {
+
+    const login = useGoogleLogin({
+        flow: "auth-code", // 👈 This ensures we get "code" instead of ID token
+        onSuccess: async (codeResponse) => {
+            console.log("Auth Code:", codeResponse.code);
+
+            // send code + extra info (e.g. username) to backend
+            const result = await axios.post("http://localhost:5000/auth/google", {
+                code: codeResponse.code,
+                countryCode: "CA",
+                userType: "individual",
+                appCode: "LMS",
+                isAffiliated: false,
+                deviceId: "a6a6af5e-3ec9-413f-9cfd-305c1539aa18",
+            });
+
+            console.log("Server Response:", result.data);
+        },
+        onError: (error) => console.error("Google Login Failed:", error),
+    });
+
     const navigate = useNavigate();
 
     const [form, setForm] = useState({
@@ -20,8 +43,8 @@ export default function Signup() {
         confirmPassword: "",
     });
 
-    const [ errors, setErrors ] = useState({});
-    const [ isSubmiting, setIsSubmiting ] = useState(false);
+    const [errors, setErrors] = useState({});
+    const [isSubmiting, setIsSubmiting] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -110,7 +133,7 @@ export default function Signup() {
                     />
                     {errors.email && <p className="text-sm text-red-700">{errors.email}</p>}
 
-                    
+
                     <FormControl
                         fullWidth
                         margin="normal"
@@ -203,66 +226,67 @@ export default function Signup() {
                         <hr className="flex-grow border-gray-300" />
                     </div>
 
-                    {/* Social Buttons */}
-                    <div className="flex justify-center gap-4 mt-4">
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                borderRadius: "10px",
-                                textTransform: "none",
-                                padding: "10px 20px",
-                                minWidth: "80px",
-                                borderColor: "#e0e0e0"
-                            }}
-                        >
-                            <img
-                                src={facebookLogo}
-                                alt="Facebook"
-                                className="w-6 h-6"
-                            />
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                borderRadius: "10px",
-                                textTransform: "none",
-                                padding: "10px 20px",
-                                minWidth: "80px",
-                                borderColor: "#e0e0e0"
-                            }}
-                        >
-                            <img
-                                src={googleLogo}
-                                alt="Google"
-                                className="w-6 h-6"
-                            />
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                borderRadius: "10px",
-                                textTransform: "none",
-                                padding: "10px 20px",
-                                minWidth: "80px",
-                                borderColor: "#e0e0e0"
-                            }}
-                        >
-                            <img
-                                src={appleLogo}
-                                alt="Apple"
-                                className="w-6 h-6"
-                            />
-                        </Button>
-                    </div>
-
-
-                    <p className="text-sm text-sm text-center mt-4">
-                        Already have an account?{" "}
-                        <a href="/login" className="text-blue-500 hover:underline">
-                            Login
-                        </a>
-                    </p>
                 </form>
+                {/* Social Buttons */}
+                <div className="flex justify-center gap-4 mt-4">
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderRadius: "10px",
+                            textTransform: "none",
+                            padding: "10px 20px",
+                            minWidth: "80px",
+                            borderColor: "#e0e0e0"
+                        }}
+                    >
+                        <img
+                            src={facebookLogo}
+                            alt="Facebook"
+                            className="w-6 h-6"
+                        />
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderRadius: "10px",
+                            textTransform: "none",
+                            padding: "10px 20px",
+                            minWidth: "80px",
+                            borderColor: "#e0e0e0"
+                        }}
+                        onClick={() => login()}
+                    >
+                        <img
+                            src={googleLogo}
+                            alt="Google"
+                            className="w-6 h-6"
+                        />
+                    </Button>
+                    <Button
+                        variant="outlined"
+                        sx={{
+                            borderRadius: "10px",
+                            textTransform: "none",
+                            padding: "10px 20px",
+                            minWidth: "80px",
+                            borderColor: "#e0e0e0"
+                        }}
+                    >
+                        <img
+                            src={appleLogo}
+                            alt="Apple"
+                            className="w-6 h-6"
+                        />
+                    </Button>
+                </div>
+
+
+                <p className="text-sm text-sm text-center mt-4">
+                    Already have an account?{" "}
+                    <a href="/login" className="text-blue-500 hover:underline">
+                        Login
+                    </a>
+                </p>
             </div>
             <div
                 className="bg-bgDark w-3/5 h-screen min-h-[500px] hidden sm:block bg-cover bg-center relative"
