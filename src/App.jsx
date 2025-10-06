@@ -18,8 +18,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/signup" element={<Signup />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="*" element="404 not found"/>
+          <Route path="/" element={<Dashboard />} />
         </Routes>
       </Router>
       <ToastContainer 
