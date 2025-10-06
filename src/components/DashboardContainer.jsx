@@ -4,7 +4,7 @@ import DashboardFooter from "./DashboardFooter";
 
 export default function DashboardContainer({ content = (<div>Dashboard Content</div>) }) {
     return (
-        <div className=" max-h-screen flex flex-col">
+        <div className="min-h-screen max-h-screen flex flex-col">
             <DashboardHeader />
 
             <div className="flex flex-1 overflow-hidden">

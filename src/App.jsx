@@ -14,7 +14,7 @@ function App() {
   }
 
   return (
-    <div className="bg-bgLight dark:bg-bgDark text-textPrimaryLight dark:text-textPrimaryDark">
+    <div className="bg-bgLight dark:bg-bgDark min-h-screen text-textPrimaryLight dark:text-textPrimaryDark">
       <Router>
         <Routes>
           <Route path="/signup" element={<Signup />} />
